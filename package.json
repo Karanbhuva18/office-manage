@@ -1,0 +1,21 @@
+{
+  "name": "office-management",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Karanbhuva18/office-manage.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Karanbhuva18/office-manage/issues"
+  },
+  "homepage": "https://github.com/Karanbhuva18/office-manage#readme"
+}
