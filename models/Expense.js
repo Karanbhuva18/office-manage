@@ -29,13 +29,14 @@ const Expense = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    creator:{
-        type:DataTypes.INTEGER,
-        allowNull:true
+    creator: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
     },
-    paid_user:{
-        type:DataTypes.INTEGER
-    }
+    paid_user: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     timestamps: true,

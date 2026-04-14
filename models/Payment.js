@@ -29,6 +29,10 @@ const Payment = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    total: {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+    },
   },
   {
     timestamps: true,

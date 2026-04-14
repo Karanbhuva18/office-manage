@@ -4,8 +4,8 @@ import {
   deleteProduct,
   getAllProduct,
   updateProduct,
-} from "../controllers/Product.controller";
-import { userLoginCheck } from "../middleware/auth.middleware";
+} from "../controllers/Product.controller.js";
+import { userLoginCheck, userRole } from "../middleware/auth.middleware.js";
 
 const routes = express.Router();
 

@@ -1,4 +1,8 @@
-import { accessTokenGenerated, refreshTokenGenerated } from "../middleware/auth.middleware.js";
+import { Op } from "sequelize";
+import {
+  accessTokenGenerated,
+  refreshTokenGenerated,
+} from "../middleware/auth.middleware.js";
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 
@@ -74,3 +78,88 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const { page = 1, limit = 10, name, email } = req.query;
+    const offset = (page - 1) * limit;
+    let whereClause = {};
+    if (name) {
+      whereClause.name = {
+        [Op.like]: `%${name}%`,
+      };
+    }
+    if (email) {
+      whereClause.email = {
+        [Op.like]: `%${email}%`,
+      };
+    }
+    const { count, rows: users } = await User.findAndCountAll({
+      where: whereClause,
+      offset,
+      limit: parseInt(limit),
+      attributes: { exclude: ["password", "refreshToken"] },
+    });
+    const totalPages = Math.ceil(count / limit);
+    const hasNextPage = page < totalPages;
+    const hasPreviousPage = page > 1;
+    return res.status(200).json({
+      message: "Users retrieved successfully",
+      data: users,
+      total: count,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        hasNextPage,
+        hasPreviousPage,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ message: "User id is required" });
+    }
+    const findUser = await User.findByPk(id);
+    if (!findUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const deleteUser = await User.destroy({ where: { id } });
+    if (deleteUser) {
+      return res.status(200).json({ message: "User deleted successfully" });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, password, role, dept_id } = req.body;
+    if (!id) {
+      return res.status(400).json({ message: "User id is required" });
+    }
+    const findUser = await User.findByPk(id);
+    if (!findUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const saltRounds = 10;
+    const hashPassword = bcrypt.hashSync(password, saltRounds);
+    const updateUser = await User.update(
+      { name, email, password: hashPassword, role, dept_id },
+      { where: { id } },
+    );
+    return res
+      .status(200)
+      .json({ message: "User updated successfully", data: updateUser });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
