@@ -28,7 +28,7 @@ export const createSales = async (req, res) => {
       const createSales = await Sales.create({
         client_id,
         product_id,
-        amount,
+        total:amount,
         saller_id,
         payment_id: createPayment.id,
         sale_date: new Date(),
@@ -47,7 +47,7 @@ export const createSales = async (req, res) => {
       const createSales = await Sales.create({
         client_id,
         product_id,
-        amount,
+        total:amount,
         saller_id,
         sale_date: new Date(),
       });
@@ -72,7 +72,7 @@ export const getAllSales = async (req, res) => {
         "id",
         [col("product.name"), "productName"],
         [col("client.name"), "clientName"],
-        "amount",
+        "total",
         [col("payment.type"), "type"],
         [col("payment.status"), "status"],
         "sale_date",
@@ -81,14 +81,17 @@ export const getAllSales = async (req, res) => {
         {
           model: Product,
           attributes: [],
+          as: "product",
         },
         {
           model: Payment,
           attributes: [],
+          as: "payment",
         },
         {
           model: Client,
           attributes: [],
+           as: "client",
         },
       ],
       limit: parseInt(limit),

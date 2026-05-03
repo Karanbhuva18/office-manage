@@ -1,17 +1,24 @@
-import { createSales, getAllSales } from "../controllers/slaes.controller.js";
-
+import {
+  createExpense,
+  getExpesnes,
+} from "../controllers/expense.controller.js";
 import express from "express";
 import { userLoginCheck, userRole } from "../middleware/auth.middleware.js";
 
 const routes = express.Router();
 
-routes.post("/", userLoginCheck, userRole(["admin", "manager"]), createSales);
+routes.post(
+  "/createExpense",
+  userLoginCheck,
+  userRole(["admin", "manager"]),
+  createExpense,
+);
 
 routes.get(
-  "/",
+  "/getExpense",
   userLoginCheck,
   userRole(["admin", "manager", "employee"]),
-  getAllSales,
+  getExpesnes,
 );
 
 export default routes;

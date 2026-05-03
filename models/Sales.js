@@ -10,7 +10,7 @@ const Sales = sequelize.define(
       primaryKey: true,
     },
     client_id: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     product_id: {

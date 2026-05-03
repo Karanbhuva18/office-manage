@@ -4,6 +4,7 @@ import Product from "../models/Product.js";
 export const createProduct = async (req, res) => {
   try {
     const { name, price, tax, description, dept_id } = req.body;
+    console.log('price',price)
     if (!name || !price) {
       return res.status(400).json({ message: "name and price are required" });
     }
@@ -14,7 +15,7 @@ export const createProduct = async (req, res) => {
 
     const createProduct = await Product.create({
       name,
-      price,
+      Price:price,
       tax,
       description,
       dept_id,
@@ -29,7 +30,7 @@ export const createProduct = async (req, res) => {
 
 export const getAllProduct = async (req, res) => {
   try {
-    const { page = 1, limit = 1, product } = req.query;
+    const { page = 1, limit = 5, product } = req.query;
     const offSet = (page - 1) * limit;
     let whereClause = {};
     if (product) {
