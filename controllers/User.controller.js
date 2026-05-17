@@ -14,7 +14,7 @@ export const createUser = async (req, res) => {
       return res.status(400).json({ message: "required fileds are empty" });
     }
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ message: "user is already existing" });
     }
@@ -162,4 +162,3 @@ export const updateUser = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
-

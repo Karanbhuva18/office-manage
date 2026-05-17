@@ -1,5 +1,5 @@
 import Client from "../models/Client.js";
-
+import { Op } from "sequelize";
 export const createClient = async (req, res) => {
   try {
     const { name, phone, email } = req.body;

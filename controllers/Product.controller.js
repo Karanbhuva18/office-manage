@@ -4,7 +4,7 @@ import Product from "../models/Product.js";
 export const createProduct = async (req, res) => {
   try {
     const { name, price, tax, description, dept_id } = req.body;
-    console.log('price',price)
+    console.log("price", price);
     if (!name || !price) {
       return res.status(400).json({ message: "name and price are required" });
     }
@@ -15,7 +15,7 @@ export const createProduct = async (req, res) => {
 
     const createProduct = await Product.create({
       name,
-      Price:price,
+      Price: price,
       tax,
       description,
       dept_id,
@@ -83,7 +83,6 @@ export const updateProduct = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
-
 
 export const deleteProduct = async (req, res) => {
   try {
