@@ -170,7 +170,6 @@ export const createProduct = async (productData: {
   price: number;
   tax: number;
   description: string;
-  dept_id: number;
 }) => {
   try {
     const response = await axiosInstance.post(
@@ -184,16 +183,87 @@ export const createProduct = async (productData: {
   }
 };
 
-export const useCreateProduct = () => {
+export const useCreateProduct = ({
+  setIsModalOpen,
+}: {
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createProduct,
     onSuccess: (data) => {
       console.log("Product created successfully:", data.data);
       toast.success(data?.data?.message || "Product created successfully");
+      queryClient.invalidateQueries({
+        queryKey: ["products"],
+      });
+      setIsModalOpen(false);
     },
     onError: (error: AxiosError<ErrorResponse>) => {
       console.error("Error creating product:", error);
       toast.error(error.response?.data?.message || "Something went wrong");
+    },
+  });
+};
+
+export const deleteProduct = async (id: number) => {
+  try {
+    const response = await axiosInstance.delete(`/product/delete/${id}`);
+    return response;
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    throw error;
+  }
+};
+
+export const useDeleteProduct = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteProduct,
+    onSuccess: (data) => {
+      console.log("Product deleted successfully:", data.data);
+      toast.success(data?.data?.message || "Product deleted successfully");
+      queryClient.invalidateQueries({
+        queryKey: ["products"],
+      });
+    },
+  });
+};
+
+export const updateProduct = async (productData: {
+  id: number;
+  name: string;
+  price: number;
+  tax: number;
+  description: string;
+}) => {
+  try {
+    const response = await axiosInstance.put(
+      `/product/update/${productData.id}`,
+      productData,
+    );
+    return response;
+  } catch (error) {
+    console.error("Error updating product:", error);
+    throw error;
+  }
+};
+
+export const useUpdateProduct = ({
+  setIsModalOpen,
+}: {
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateProduct,
+    onSuccess: (data) => {
+      console.log("Product updated successfully:", data.data);
+      toast.success(data?.data?.message || "Product updated successfully");
+      queryClient.invalidateQueries({
+        queryKey: ["products"],
+      });
+      setIsModalOpen(false);
     },
   });
 };

@@ -30,7 +30,9 @@ export const createProduct = async (req, res) => {
 
 export const getAllProduct = async (req, res) => {
   try {
-    const { page = 1, limit = 5, product } = req.query;
+    let { page = 1, limit = 5, product } = req.query;
+    page = parseInt(page);
+    limit = parseInt(limit);
     const offSet = (page - 1) * limit;
     let whereClause = {};
     if (product) {
@@ -77,7 +79,7 @@ export const updateProduct = async (req, res) => {
       return res.status(400).json({ message: "product not availabel" });
     }
 
-    await product.update({ name, price, tax, dept_id, description });
+    await product.update({ name, Price: price, tax, dept_id, description });
     return res.status(200).json({ message: "Product Updated", data: product });
   } catch (error) {
     return res.status(500).json({ message: error.message });

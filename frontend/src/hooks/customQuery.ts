@@ -39,3 +39,46 @@ export const useGetClients = (page: number, limit: number, client: string) => {
     retry: false,
   });
 };
+
+export const getProducts = async ({
+  page,
+  limit,
+  product,
+}: {
+  page: number;
+  limit: number;
+  product: string;
+}) => {
+  try {
+    const response = await axiosInstance.get(
+      `product/getProduct?page=${page}&limit=${limit}&product=${product}`,
+    );
+    console.log('response',response)
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    throw error;
+  }
+};
+
+export const useGetProducts = (
+  page: number,
+  limit: number,
+  product: string,
+) => {
+  return useQuery({
+    queryKey: ["products", page, limit, product],
+    queryFn: async () => {
+      console.log("API CALLED:", product);
+      return getProducts({
+        page,
+        limit,
+        product,
+      });
+    },
+    enabled: product.length >= 0,
+    placeholderData: (previousData) => previousData,
+    staleTime: 1000 * 60 * 5,
+    retry: false,
+  });
+};

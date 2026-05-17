@@ -37,6 +37,24 @@ export const clientSchema = z
     path: ["phone"],
   });
 
-  export type ClientFormData = z.infer<typeof clientSchema>;
+export type ClientFormData = z.infer<typeof clientSchema>;
 
-  export const clientResolver = zodResolver(clientSchema);
+export const clientResolver = zodResolver(clientSchema);
+
+export const productSchema = z
+  .object({
+    name: z.string().min(3, "Name must be at least 3 characters"),
+    description: z
+      .string()
+      .max(200, "Description must be at most 200 characters"),
+    price: z.number(),
+    tax: z.number(),
+  })
+  .refine((data) => data.tax >= 0 && data.tax <= 100, {
+    message: "Tax must be between 0 and 100",
+    path: ["tax"],
+  });
+
+export type ProductFormData = z.infer<typeof productSchema>;
+
+export const productResolver = zodResolver(productSchema);
