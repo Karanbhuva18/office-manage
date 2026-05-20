@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import type { User } from "../types";
+import type { Payment, User } from "../types";
 import axiosInstance from "../api/axiosIntersepter";
 import { toast } from "sonner";
 import type { AxiosError } from "axios";
@@ -264,6 +264,79 @@ export const useUpdateProduct = ({
         queryKey: ["products"],
       });
       setIsModalOpen(false);
+    },
+  });
+};
+
+export const createSale = async (saleData: {
+  clientId: number;
+  productId: number;
+  amount: number;
+  sallerId?: number;
+  paymentType?: string;
+}) => {
+  try {
+    console.log("saleData", saleData);
+    const response = await axiosInstance.post("/sale", saleData);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating sale:", error);
+    throw error;
+  }
+};
+
+export const useCreateSale = ({
+  setIsModalOpen,
+}: {
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createSale,
+    onSuccess: (data) => {
+      console.log("Sale created successfully:", data);
+      toast.success(data?.message || "Sale created successfully");
+      queryClient.invalidateQueries({
+        queryKey: ["sales"],
+      });
+      setIsModalOpen(false);
+    },
+    onError: (error: AxiosError<ErrorResponse>) => {
+      console.error("Error creating sale:", error);
+      toast.error(error.response?.data?.message || "Something went wrong");
+    },
+  });
+};
+
+export const createPayment = async(paymentData: Payment) => {
+  try{
+    const response = await axiosInstance.post("/payment", paymentData);
+    return response.data;
+  }catch(error){
+    console.error("Error creating payment:", error);
+    throw error;
+  }
+}
+
+export const useCreatePayment = ({
+  setIsModalOpen,
+}: {
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
+  // const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createPayment,
+    onSuccess: (data) => {
+      console.log("Payment created successfully:", data);
+      toast.success(data?.message || "Payment created successfully");
+      // queryClient.invalidateQueries({
+      //   queryKey: ["payments"],
+      // });
+      setIsModalOpen(false);
+    },
+    onError: (error: AxiosError<ErrorResponse>) => {
+      console.error("Error creating payment:", error);
+      toast.error(error.response?.data?.message || "Something went wrong");
     },
   });
 };

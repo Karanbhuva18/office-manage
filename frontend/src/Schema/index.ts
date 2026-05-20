@@ -58,3 +58,28 @@ export const productSchema = z
 export type ProductFormData = z.infer<typeof productSchema>;
 
 export const productResolver = zodResolver(productSchema);
+
+export const salesSchema = z.object({
+  clientId: z.number(),
+  productId: z.number().min(1, "Product is required"),
+  amount: z.number(),
+  sallerId: z.number().optional(),
+  paymentType: z.enum(["prepaid", "postpaid"], "Invalid payment type"),
+});
+
+export type SalesFormData = z.infer<typeof salesSchema>;
+
+export const salesResolver = zodResolver(salesSchema);
+
+export const paymentSchema = z
+  .object({
+    sale_id: z.number().min(1, "Sale is required"),
+    amount: z.number(),
+  })
+  .refine((data) => data.amount > 0, {
+    message: "Amount must be greater than 0",
+  });
+
+export type PaymentFormData = z.infer<typeof paymentSchema>;
+
+export const paymentResolver = zodResolver(paymentSchema);

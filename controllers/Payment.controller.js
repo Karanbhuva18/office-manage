@@ -1,4 +1,4 @@
-import { col } from "sequelize";
+import { col, literal } from "sequelize";
 import Payment from "../models/Payment.js";
 import Product from "../models/Product.js";
 import Sales from "../models/Sales.js";
@@ -20,6 +20,7 @@ export const createPayment = async (req, res) => {
         {
           model: Product,
           attributes: [],
+          as: "product",
         },
       ],
       raw: true,
@@ -59,12 +60,13 @@ export const getPayments = async (req, res) => {
         [col("sale.id"), "saleId"],
         ["total", "paidAmount"],
         [col("sale.product.price"), "total"],
-        [literal("sale.product.price - Payment.total"), "remianing"],
+        [literal("`sale->product`.`price` - `Payment`.`total`"), "remaining"],
       ],
       include: [
         {
           model: Client,
           attributes: [],
+          as: "client",
         },
         {
           model: Sales,

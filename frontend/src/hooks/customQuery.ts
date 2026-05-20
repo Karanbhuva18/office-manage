@@ -53,7 +53,7 @@ export const getProducts = async ({
     const response = await axiosInstance.get(
       `product/getProduct?page=${page}&limit=${limit}&product=${product}`,
     );
-    console.log('response',response)
+    console.log("response", response);
     return response.data;
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -80,5 +80,65 @@ export const useGetProducts = (
     placeholderData: (previousData) => previousData,
     staleTime: 1000 * 60 * 5,
     retry: false,
+  });
+};
+
+export const getSales = async ({
+  page,
+  limit,
+  status,
+}: {
+  page: number;
+  limit: number;
+  status: string;
+}) => {
+  try {
+    const response = await axiosInstance.get(
+      `/sale?page=${page}&limit=${limit}&status=${status}`,
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching sales:", error);
+    throw error;
+  }
+};
+
+export const userGetSales = (page: number, limit: number, status: string) => {
+  return useQuery({
+    queryKey: ["sales", page, limit, status],
+    queryFn: async () => {
+      return getSales({ page, limit, status });
+    },
+    placeholderData: (previousData) => previousData,
+    staleTime: 1000 * 60 * 5,
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+};
+
+export const getPayments = async () => {
+  try {
+    const response = await axiosInstance.get("/payment");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching payments:", error);
+    throw error;
+  }
+};
+
+export const userGetPayments = ({
+  page,
+  limit,
+}: {
+  page: number;
+  limit: number;
+}) => {
+  return useQuery({
+    queryKey: ["payments", page, limit],
+    queryFn: getPayments,
+    placeholderData: (previousData) => previousData,
+    staleTime: 1000 * 60 * 5,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 };

@@ -11,6 +11,7 @@ import {
 } from "../hooks/customMutation";
 import { useGetProducts } from "../hooks/customQuery";
 import ProductCard from "../components/Cards/ProductCard";
+import type { Product } from "../types";
 
 const Products = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,14 +26,7 @@ const Products = () => {
   } = useForm<ProductFormData>({
     resolver: productResolver,
   });
-  type Product = {
-    id: number;
-    name: string;
-    Price: number;
-    tax: number;
-    description: string;
-    dept_id: number | null;
-  };
+ 
   const { data: products } = useGetProducts(1, 10, "");
   const { mutate: deleteProduct } = useDeleteProduct();
   const { mutate: updateProduct } = useUpdateProduct({ setIsModalOpen });
