@@ -17,19 +17,11 @@ const Attendance = sequelize.define(
       type: DataTypes.DATE,
       allowNull: true,
     },
-    first_check_in: {
+    check_in: {
       type: DataTypes.TIME,
       allowNull: true,
     },
-    first_check_out: {
-      type: DataTypes.TIME,
-      allowNull: true,
-    },
-    secound_check_in: {
-      type: DataTypes.TIME,
-      allowNull: true,
-    },
-    secound_check_out: {
+    check_out: {
       type: DataTypes.TIME,
       allowNull: true,
     },

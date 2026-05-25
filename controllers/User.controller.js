@@ -5,6 +5,7 @@ import {
 } from "../middleware/auth.middleware.js";
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
+import Attendance from "../models/Attendance.js";
 
 export const createUser = async (req, res) => {
   try {
@@ -158,6 +159,116 @@ export const updateUser = async (req, res) => {
     return res
       .status(200)
       .json({ message: "User updated successfully", data: updateUser });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const markAttendance = async (req, res) => {
+  try {
+    const { time } = req.body;
+    const u_id = req.user.id;
+    if (!u_id || !time) {
+      return res.status(400).json({
+        message: "u_id and time are required",
+      });
+    }
+
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const attendance = await Attendance.findOne({
+      where: {
+        u_id,
+        date: {
+          [Op.between]: [startOfDay, endOfDay],
+        },
+      },
+    });
+
+    if (!attendance) {
+      const newAttendance = await Attendance.create({
+        u_id,
+        date: new Date(),
+        check_in: time,
+      });
+
+      return res.status(201).json({
+        message: "Check-in marked successfully",
+        data: newAttendance,
+      });
+    }
+
+    if (attendance.check_in && !attendance.check_out) {
+      // Convert HH:MM:SS into seconds
+      const convertToSeconds = (time) => {
+        const [hours, minutes, seconds] = time.split(":").map(Number);
+
+        return hours * 3600 + minutes * 60 + seconds;
+      };
+
+      const checkInSeconds = convertToSeconds(attendance.check_in);
+
+      const checkOutSeconds = convertToSeconds(time);
+
+      const diffSeconds = checkOutSeconds - checkInSeconds;
+
+      const totalHours = Math.floor(diffSeconds / 3600);
+
+      attendance.check_out = time;
+      attendance.total_hours = totalHours;
+
+      await attendance.save();
+
+      return res.status(200).json({
+        message: "Check-out marked successfully",
+        data: attendance,
+      });
+    }
+
+    return res.status(400).json({
+      message: "Attendance already completed for today",
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const getAttendance = async (req, res) => {
+  try {
+    let { page = 1, limit = 10, date } = req.query;
+    page = Number(page);
+    limit = Number(limit);
+    const offset = (page - 1) * limit;
+    const selectedDate = date ? new Date(date) : new Date();
+    const startOfDay = new Date(selectedDate);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(selectedDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const { count, rows: attendance } = await Attendance.findAndCountAll({
+      where: {
+        date: {
+          [Op.between]: [startOfDay, endOfDay],
+        },
+      },
+      offset,
+      limit,
+      order: [["createdAt", "DESC"]],
+    });
+    return res.status(200).json({
+      message: "Attendance records retrieved successfully",
+      data: attendance,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(count / limit),
+        hasNextPage: offset + attendance.length < count,
+        hasPreviousPage: page > 1,
+      },
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

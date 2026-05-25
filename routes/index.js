@@ -5,6 +5,7 @@ import CashDrawer from "../routes/drawer.routes.js";
 import expenseRoute from "../routes/expense.routes.js";
 import SaleRoute from "../routes/sales.routes.js";
 import PaymentRoute from "../routes/payments.routes.js";
+import Attendance from "../routes/attendance.routes.js";
 import express from "express";
 
 const routes = express.Router();
@@ -15,7 +16,7 @@ routes.use("/cashDrawer", CashDrawer);
 routes.use("/expense", expenseRoute);
 routes.use("/client", clientRoute);
 routes.use("/product", ProductRoute);
-routes.use("/sale",SaleRoute)
-
+routes.use("/sale", SaleRoute);
+routes.use("/attendance", Attendance);
 
 export default routes;
