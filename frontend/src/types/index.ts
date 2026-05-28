@@ -47,3 +47,13 @@ export interface PaymentWithDetails {
   total: string;
   remaining: number;
 }
+
+export interface Attendance {
+  id: number;
+  u_id: string;
+  name: string;
+  date: string;
+  check_in: string | null;
+  check_out: string | null;
+  total_hours: number;
+}

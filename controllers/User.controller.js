@@ -1,4 +1,3 @@
-import { Op } from "sequelize";
 import {
   accessTokenGenerated,
   refreshTokenGenerated,
@@ -6,6 +5,7 @@ import {
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import Attendance from "../models/Attendance.js";
+import { Op } from "sequelize";
 
 export const createUser = async (req, res) => {
   try {
@@ -240,36 +240,66 @@ export const markAttendance = async (req, res) => {
 export const getAttendance = async (req, res) => {
   try {
     let { page = 1, limit = 10, date } = req.query;
+
     page = Number(page);
     limit = Number(limit);
+
     const offset = (page - 1) * limit;
+
     const selectedDate = date ? new Date(date) : new Date();
+
     const startOfDay = new Date(selectedDate);
     startOfDay.setHours(0, 0, 0, 0);
+
     const endOfDay = new Date(selectedDate);
     endOfDay.setHours(23, 59, 59, 999);
 
-    const { count, rows: attendance } = await Attendance.findAndCountAll({
+    // Get users
+    const { count, rows: users } = await User.findAndCountAll({
+      offset,
+      limit,
+    });
+
+    // Get attendance records
+    const attendanceRecords = await Attendance.findAll({
       where: {
         date: {
           [Op.between]: [startOfDay, endOfDay],
         },
       },
-      offset,
-      limit,
-      order: [["createdAt", "DESC"]],
     });
+    // Merge users with attendance
+    const data = users.map((user) => {
+      const attendance = attendanceRecords.find(
+        (item) => Number(item.u_id) === Number(user.id),
+      );
+      return {
+        id: attendance?.id,
+        u_id: user.id,
+        name: user.name,
+        date: selectedDate,
+
+        check_in: attendance?.check_in || null,
+
+        check_out: attendance?.check_out || null,
+
+        total_hours: attendance?.total_hours || null,
+      };
+    });
+
     return res.status(200).json({
       message: "Attendance records retrieved successfully",
-      data: attendance,
+      data,
       pagination: {
         currentPage: page,
         totalPages: Math.ceil(count / limit),
-        hasNextPage: offset + attendance.length < count,
+        hasNextPage: offset + users.length < count,
         hasPreviousPage: page > 1,
       },
     });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 };

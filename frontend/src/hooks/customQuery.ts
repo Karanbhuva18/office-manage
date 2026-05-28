@@ -142,3 +142,21 @@ export const userGetPayments = ({
     refetchOnWindowFocus: false,
   });
 };
+
+export const getAttendance = async () => {
+  try {
+    const response = await axiosInstance.get("/attendance/get-attendance");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching attendance:", error);
+    throw error;
+  }
+};
+
+export const userGetAttendance = ({ date }: { date: string }) => {
+  return useQuery({
+    queryKey: ["attendance", date],
+    queryFn: getAttendance,
+    placeholderData: (previousData) => previousData,
+  });
+};

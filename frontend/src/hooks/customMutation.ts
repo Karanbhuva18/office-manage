@@ -308,15 +308,15 @@ export const useCreateSale = ({
   });
 };
 
-export const createPayment = async(paymentData: Payment) => {
-  try{
+export const createPayment = async (paymentData: Payment) => {
+  try {
     const response = await axiosInstance.post("/payment", paymentData);
     return response.data;
-  }catch(error){
+  } catch (error) {
     console.error("Error creating payment:", error);
     throw error;
   }
-}
+};
 
 export const useCreatePayment = ({
   setIsModalOpen,
@@ -337,6 +337,30 @@ export const useCreatePayment = ({
     onError: (error: AxiosError<ErrorResponse>) => {
       console.error("Error creating payment:", error);
       toast.error(error.response?.data?.message || "Something went wrong");
+    },
+  });
+};
+
+const markAttendance = async (time: string) => {
+  try {
+    const response = await axiosInstance.post("/attendance/check-in", { time });
+    return response.data;
+  } catch (error) {
+    console.error("Error marking attendance:", error);
+    throw error;
+  }
+};
+
+export const useMarkAttendance = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: markAttendance,
+    onSuccess: (data) => {
+      console.log("Attendance marked successfully:", data);
+      toast.success(data?.message || "Attendance marked successfully");
+      queryClient.invalidateQueries({
+        queryKey: ["attendance"],
+      });
     },
   });
 };
