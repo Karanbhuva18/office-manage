@@ -45,7 +45,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/v1", routes);
 
-app.listen(5000, () => {
+app.listen(5000, "0.0.0.0", () => {
   sequlize.sync({ alter: true });
   console.log(`app start in port ${5000}`);
 });
