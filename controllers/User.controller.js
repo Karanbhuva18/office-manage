@@ -10,7 +10,6 @@ import { Op } from "sequelize";
 export const createUser = async (req, res) => {
   try {
     const { name, email, password, role, dept_id } = req.body;
-    console.log("req.body", req.body);
     if (!name || !email || !password || !role) {
       return res.status(400).json({ message: "required fileds are empty" });
     }
@@ -173,7 +172,7 @@ export const markAttendance = async (req, res) => {
         message: "u_id and time are required",
       });
     }
-
+    console.log("time", time);
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
 
@@ -188,7 +187,7 @@ export const markAttendance = async (req, res) => {
         },
       },
     });
-
+    console.log("attendance", attendance);
     if (!attendance) {
       const newAttendance = await Attendance.create({
         u_id,
@@ -246,8 +245,8 @@ export const getAttendance = async (req, res) => {
 
     const offset = (page - 1) * limit;
 
+    // Default = today
     const selectedDate = date ? new Date(date) : new Date();
-
     const startOfDay = new Date(selectedDate);
     startOfDay.setHours(0, 0, 0, 0);
 
@@ -258,9 +257,9 @@ export const getAttendance = async (req, res) => {
     const { count, rows: users } = await User.findAndCountAll({
       offset,
       limit,
+      order: [["id", "ASC"]],
     });
 
-    // Get attendance records
     const attendanceRecords = await Attendance.findAll({
       where: {
         date: {
@@ -268,21 +267,25 @@ export const getAttendance = async (req, res) => {
         },
       },
     });
+
+    const attendanceMap = {};
+
+    attendanceRecords.forEach((record) => {
+      attendanceMap[record.u_id] = record;
+    });
+
     // Merge users with attendance
     const data = users.map((user) => {
-      const attendance = attendanceRecords.find(
-        (item) => Number(item.u_id) === Number(user.id),
-      );
+      const attendance = attendanceMap[user.id];
+
       return {
-        id: attendance?.id,
+        id: attendance?.id || null,
         u_id: user.id,
         name: user.name,
         date: selectedDate,
 
         check_in: attendance?.check_in || null,
-
         check_out: attendance?.check_out || null,
-
         total_hours: attendance?.total_hours || null,
       };
     });

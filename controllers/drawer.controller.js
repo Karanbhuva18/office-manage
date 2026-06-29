@@ -6,8 +6,9 @@ import { col } from "sequelize";
 
 export const updateCashDrawer = async (req, res) => {
   try {
-    const { currency } = req.body;
 
+    const { currency } = req.body;
+    console.log("currency 11 line =====>", currency);
     if (!currency || typeof currency !== "object") {
       return res.status(400).json({ message: "currency must be object" });
     }

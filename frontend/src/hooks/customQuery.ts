@@ -160,3 +160,27 @@ export const userGetAttendance = ({ date }: { date: string }) => {
     placeholderData: (previousData) => previousData,
   });
 };
+
+export const getCurrency = async () => {
+  try {
+    const response = await axiosInstance.get("/cashDrawer/getCashDrawer");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching currency:", error);
+    throw error;
+  }
+};
+
+export const userGetCurrency = ({
+  page,
+  limit,
+}: {
+  page: number;
+  limit: number;
+}) => {
+  return useQuery({
+    queryKey: ["currency", page, limit],
+    queryFn: getCurrency,
+    placeholderData: (previousData) => previousData,
+  });
+};

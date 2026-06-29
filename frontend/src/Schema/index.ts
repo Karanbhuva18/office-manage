@@ -83,3 +83,19 @@ export const paymentSchema = z
 export type PaymentFormData = z.infer<typeof paymentSchema>;
 
 export const paymentResolver = zodResolver(paymentSchema);
+
+export const currencySchema = z.object({
+  "500": z.number().min(0),
+  "200": z.number().min(0).optional(),
+  "100": z.number().min(0),
+  "50": z.number().min(0),
+  "20": z.number().min(0),
+  "10": z.number().min(0),
+  "5": z.number().min(0),
+  "2": z.number().min(0),
+  "1": z.number().min(0),
+});
+
+export type CurrencyFormData = z.infer<typeof currencySchema>;
+
+export const currencyResolver = zodResolver(currencySchema);

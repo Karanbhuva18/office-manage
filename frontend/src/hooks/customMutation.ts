@@ -4,6 +4,8 @@ import axiosInstance from "../api/axiosIntersepter";
 import { toast } from "sonner";
 import type { AxiosError } from "axios";
 import { useQueryClient } from "@tanstack/react-query";
+import type { UseFormReset } from "react-hook-form";
+import type { CurrencyFormData } from "../Schema";
 
 interface ErrorResponse {
   message: string;
@@ -361,6 +363,50 @@ export const useMarkAttendance = () => {
       queryClient.invalidateQueries({
         queryKey: ["attendance"],
       });
+    },
+  });
+};
+
+const addCurrency = async (currencyData: Record<string, number>) => {
+  try {
+    const response = await axiosInstance.put("/cashDrawer/updateCashDrawer", {
+      currency: currencyData,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error adding currency:", error);
+    throw error;
+  }
+};
+
+export const useAddCurrency = ({
+  setIsModalOpen,
+  reset,
+}: {
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  reset: UseFormReset<CurrencyFormData>;
+}) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: addCurrency,
+    onSuccess: (data) => {
+      console.log("Currency added successfully:", data);
+      toast.success(data?.message || "Currency added successfully");
+      queryClient.invalidateQueries({
+        queryKey: ["cashDrawer"],
+      });
+      reset({
+        "500": 0,
+        "200": 0,
+        "100": 0,
+        "50": 0,
+        "20": 0,
+        "10": 0,
+        "5": 0,
+        "2": 0,
+        "1": 0,
+      });
+      setIsModalOpen(false);
     },
   });
 };

@@ -1,6 +1,6 @@
 import Sequelize from "sequelize";
 
-const sequlize = new Sequelize("office-manage", "root", "", {
+const sequlize = new Sequlize("office-manage", "root", "", {
   host: "localhost",
   dialect: "mysql",
 });

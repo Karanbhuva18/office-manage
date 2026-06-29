@@ -1,6 +1,6 @@
 export const calculateTotal = (currency) => {
   let total = 0;
-
+  console.log('currency',currency)
   for (const note in currency) {
     total += Number(note) * Number(currency[note]);
   }
@@ -9,6 +9,11 @@ export const calculateTotal = (currency) => {
 };
 
 export const mergeCurrency = (oldCurrency, newCurrency) => {
+  // Parse if string
+  if (typeof oldCurrency === "string") {
+    oldCurrency = JSON.parse(oldCurrency);
+  }
+
   const result = { ...oldCurrency };
 
   for (const note in newCurrency) {

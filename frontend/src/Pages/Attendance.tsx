@@ -85,7 +85,6 @@ const Attendance = () => {
           const isToday =
             format(new Date(row.original.date), "yyyy-MM-dd") ===
             format(new Date(), "yyyy-MM-dd");
-          console.log("isToday", isToday,'row.original.date',row.original.date);
           return row.original.check_out ? (
             <span className="text-muted-foreground">
               {format(
